@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accommodation Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --surface2: #F1EFE9;
+    --border: #E5E3DC;
+    --border2: #D4D1C8;
+    --text: #1A1915;
+    --text2: #6B6860;
+    --text3: #A09D96;
+    --accent: #C17B3F;
+    --accent-bg: #FDF3E8;
+    --accent-text: #7A4A1E;
+    --green: #3D7A5C;
+    --green-bg: #EBF5EF;
+    --green-text: #1E4D36;
+    --blue: #3B6B9E;
+    --blue-bg: #EBF1F9;
+    --blue-text: #1E3D5C;
+    --red: #B85454;
+    --red-bg: #F9EBEB;
+    --red-text: #5C1E1E;
+    --purple: #6B5FA0;
+    --purple-bg: #F0EEF9;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 100;
+    padding: 0;
+  }
+  .sidebar-header {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-icon svg { width: 14px; height: 14px; fill: white; }
+  .logo-text { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; }
+  .logo-sub { font-size: 11px; color: var(--text3); }
+  .sidebar-nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+  .nav-section-title { font-size: 11px; font-weight: 500; color: var(--text3); padding: 4px 8px 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 6px;
+    cursor: pointer; font-size: 13px; color: var(--text2);
+    transition: background 0.1s; margin-bottom: 1px;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--surface2); color: var(--text); font-weight: 500; }
+  .nav-item .icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+  .nav-item.active .icon { opacity: 1; }
+  .sidebar-stats { padding: 14px 18px; border-top: 1px solid var(--border); }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .stat-label { font-size: 11px; color: var(--text3); }
+  .stat-val { font-size: 12px; font-weight: 500; color: var(--text); }
+
+  /* MAIN */
+  .main { margin-left: 240px; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    position: sticky; top: 0; z-index: 90;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .page-title { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--text); }
+  .view-tabs { display: flex; gap: 2px; background: var(--surface2); border-radius: 8px; padding: 3px; }
+  .view-tab {
+    padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    color: var(--text2); cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .view-tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; border: none; font-family: inherit;
+  }
+  .btn-primary { background: var(--text); color: white; }
+  .btn-primary:hover { background: #2d2c28; }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+
+  /* CONTENT AREA */
+  .content { padding: 28px 32px; }
+
+  /* SUMMARY CARDS */
+  .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .summary-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+  }
+  .summary-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .summary-value { font-size: 22px; font-family: 'Instrument Serif', serif; color: var(--text); }
+  .summary-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .summary-trend { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+  .trend-green { background: var(--green-bg); color: var(--green-text); }
+  .trend-red { background: var(--red-bg); color: var(--red-text); }
+
+  /* FILTERS */
+  .filters-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-select {
+    padding: 6px 10px; border-radius: 7px; font-size: 12px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); cursor: pointer; font-family: inherit;
+    appearance: none; padding-right: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23A09D96' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 8px center;
+  }
+  .search-input {
+    padding: 6px 12px; border-radius: 7px; font-size: 12px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-family: inherit; width: 200px;
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--border2); }
+  .filter-label { font-size: 12px; color: var(--text3); }
+
+  /* GALLERY VIEW */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .property-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .property-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+  .card-thumb {
+    width: 100%; height: 160px; object-fit: cover;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .card-thumb-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--text3);
+  }
+  .thumb-icon { font-size: 28px; }
+  .thumb-label { font-size: 11px; }
+  .card-status {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 20px;
+  }
+  .status-shortlisted { background: var(--accent-bg); color: var(--accent-text); border: 1px solid #E8C49A; }
+  .status-interested { background: var(--blue-bg); color: var(--blue-text); }
+  .status-rejected { background: var(--red-bg); color: var(--red-text); }
+  .status-applied { background: var(--green-bg); color: var(--green-text); }
+  .status-new { background: rgba(255,255,255,0.9); color: var(--text2); border: 1px solid var(--border); }
+  .card-body { padding: 14px 16px 16px; }
+  .card-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+  .card-hood { font-size: 12px; color: var(--text3); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+  .card-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 10px; }
+  .card-price { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); }
+  .card-price-mo { font-size: 12px; color: var(--text3); }
+  .card-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .meta-pill {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; padding: 3px 8px; border-radius: 20px;
+    background: var(--surface2); color: var(--text2);
+  }
+  .meta-pill.commute { background: var(--blue-bg); color: var(--blue-text); }
+  .meta-pill.transport-cost { background: var(--accent-bg); color: var(--accent-text); }
+  .meta-pill.type { background: var(--purple-bg); color: var(--purple); }
+  .meta-pill.bills { background: var(--green-bg); color: var(--green-text); }
+  .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
+  .card-rating { display: flex; gap: 2px; }
+  .star { font-size: 12px; }
+  .card-actions { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); background: transparent;
+    cursor: pointer; transition: background 0.1s; font-size: 12px;
+    color: var(--text3);
+  }
+  .icon-btn:hover { background: var(--surface2); color: var(--text); }
+  .icon-btn.active { background: var(--accent-bg); border-color: #E8C49A; color: var(--accent); }
+
+  /* TABLE VIEW */
+  .table-wrap { display: none; overflow-x: auto; }
+  .table-wrap.visible { display: block; }
+  .gallery.hidden { display: none; }
+  .prop-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--surface); border-radius: var(--radius);
+    overflow: hidden; border: 1px solid var(--border);
+  }
+  .prop-table th {
+    text-align: left; font-size: 11px; font-weight: 500;
+    color: var(--text3); padding: 10px 14px;
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .prop-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  .prop-table tr:last-child td { border-bottom: none; }
+  .prop-table tr:hover td { background: var(--surface2); }
+  .table-thumb { width: 48px; height: 36px; border-radius: 5px; object-fit: cover; background: var(--surface2); overflow: hidden; flex-shrink: 0; }
+  .table-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .table-name { font-weight: 500; font-size: 13px; color: var(--text); }
+  .table-sub { font-size: 11px; color: var(--text3); }
+  .table-price { font-family: 'Instrument Serif', serif; font-size: 16px; }
+  .pill-sm {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px;
+  }
+  .commute-bar { display: flex; align-items: center; gap: 6px; }
+  .bar-track { height: 4px; border-radius: 2px; background: var(--border); flex: 1; min-width: 60px; }
+  .bar-fill { height: 100%; border-radius: 2px; }
+  .bar-green { background: var(--green); }
+  .bar-amber { background: var(--accent); }
+  .bar-red { background: var(--red); }
+  .bar-label { font-size: 11px; color: var(--text2); white-space: nowrap; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 999;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: 14px;
+    width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-thumb { width: 100%; height: 200px; background: var(--surface2); position: relative; overflow: hidden; }
+  .modal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-thumb-placeholder { height: 200px; display: flex; align-items: center; justify-content: center; background: var(--surface2); font-size: 40px; }
+  .modal-body { padding: 24px 28px 28px; }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .modal-title { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); }
+  .close-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text2); flex-shrink: 0; }
+  .close-btn:hover { background: var(--surface2); }
+  .modal-hood { font-size: 13px; color: var(--text3); margin-bottom: 16px; }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .modal-stat { background: var(--surface2); border-radius: 8px; padding: 12px 14px; }
+  .modal-stat-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .modal-stat-val { font-size: 15px; font-weight: 500; color: var(--text); }
+  .modal-notes { margin-bottom: 20px; }
+  .modal-notes-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .notes-textarea {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg);
+    font-family: inherit; font-size: 13px; color: var(--text);
+    resize: vertical; min-height: 80px; outline: none;
+  }
+  .notes-textarea:focus { border-color: var(--border2); }
+  .modal-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--blue); text-decoration: none; }
+  .modal-link:hover { text-decoration: underline; }
+  .modal-status-row { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .status-btn {
+    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border); background: none; font-family: inherit;
+    color: var(--text2); transition: all 0.15s;
+  }
+  .status-btn:hover { background: var(--surface2); }
+  .status-btn.sel-shortlisted { background: var(--accent-bg); color: var(--accent-text); border-color: #E8C49A; }
+  .status-btn.sel-interested { background: var(--blue-bg); color: var(--blue-text); border-color: #B0C8E8; }
+  .status-btn.sel-applied { background: var(--green-bg); color: var(--green-text); border-color: #9ECAB3; }
+  .status-btn.sel-rejected { background: var(--red-bg); color: var(--red-text); border-color: #E8AAAA; }
+  .status-btn.sel-new { background: var(--surface2); color: var(--text); }
+
+  /* ADD FORM */
+  .add-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 999;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .add-modal-overlay.open { display: flex; }
+  .add-modal {
+    background: var(--surface); border-radius: 14px;
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: slideUp 0.2s ease;
+  }
+  .add-modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .add-modal-title { font-family: 'Instrument Serif', serif; font-size: 18px; }
+  .add-form { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--text2); }
+  .form-input, .form-select {
+    padding: 8px 10px; border-radius: 7px;
+    border: 1px solid var(--border); background: var(--bg);
+    font-family: inherit; font-size: 13px; color: var(--text);
+    outline: none; transition: border 0.15s;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--border2); }
+  .form-submit {
+    padding: 10px; border-radius: 8px; background: var(--text); color: white;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; margin-top: 4px;
+    transition: background 0.15s;
+  }
+  .form-submit:hover { background: #2d2c28; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 60px 20px; color: var(--text3);
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-title { font-size: 16px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; }
+
+  /* EXPORT DROPDOWN */
+  .export-dropdown { position: relative; }
+  .export-menu {
+    display: none; position: absolute; top: calc(100% + 6px); right: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    min-width: 180px; z-index: 200; overflow: hidden;
+    animation: fadeIn 0.12s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .export-menu.open { display: block; }
+  .export-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px; font-size: 13px; color: var(--text2);
+    cursor: pointer; transition: background 0.1s;
+  }
+  .export-item:hover { background: var(--surface2); color: var(--text); }
+  .export-divider { height: 1px; background: var(--border); margin: 3px 0; }
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--text); color: white;
+    padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg); z-index: 9999;
+    animation: slideInToast 0.2s ease;
+    pointer-events: none;
+  }
+  @keyframes slideInToast { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SCORE BAR */
+  .score-badge { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* OVERVIEW BAR CHART */
+  .overview-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .overview-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .overview-title { font-size: 12px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px; }
+  .budget-bar-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .budget-item { display: flex; align-items: center; gap: 8px; }
+  .budget-name { font-size: 12px; color: var(--text2); width: 120px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .budget-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .budget-fill { height: 100%; border-radius: 3px; background: var(--text); transition: width 0.5s ease; }
+  .budget-val { font-size: 12px; color: var(--text); font-weight: 500; width: 55px; text-align: right; flex-shrink: 0; }
+  .status-legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; justify-content: space-between; }
+  .legend-dot-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-count { font-size: 12px; font-weight: 500; color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 14 14"><path d="M7 1L1 5v8h4V9h4v4h4V5L7 1z"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">Accommodation Tracker</div>
+        <div class="logo-sub">Student Housing Dashboard</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-title">Workspace</div>
+    <div class="nav-item active">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      All Listings
+    </div>
+    <div class="nav-item" onclick="filterStatus('shortlisted')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4L8 11l-3.6 1.9.7-4L2.2 6.2l4-.6L8 2z"/></svg>
+      Shortlisted
+    </div>
+    <div class="nav-item" onclick="filterStatus('applied')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8l4 4 8-8"/></svg>
+      Applied
+    </div>
+    <div class="nav-item" onclick="filterStatus('interested')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+      Interested
+    </div>
+    <div class="nav-item" onclick="filterStatus('rejected')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+      Rejected
+    </div>
+    <div style="margin-top: 16px;">
+      <div class="nav-section-title">Resources</div>
+      <a class="nav-item" href="https://www.spareroom.co.uk/" target="_blank">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l7 4v6l-7 4L1 11V5z"/></svg>
+        SpareRoom
+      </a>
+      <a class="nav-item" href="#" target="_blank">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6l7-4 7 4v8H1V6z"/></svg>
+        University Halls
+      </a>
+      <a class="nav-item" href="https://www.rightmove.co.uk/" target="_blank">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M9.5 9.5L14 14"/></svg>
+        Rightmove
+      </a>
+    </div>
+  </div>
+  <div class="sidebar-stats">
+    <div class="stat-row"><span class="stat-label">Budget</span><span class="stat-val">£1,000/mo</span></div>
+    <div class="stat-row"><span class="stat-label">Move-in</span><span class="stat-val">Sep 2026</span></div>
+    <div class="stat-row"><span class="stat-label">Campus</span><span class="stat-val">City Centre</span></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="page-title">My Listings</span>
+      <div class="view-tabs">
+        <div class="view-tab active" onclick="setView('gallery', this)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="0.5" y="0.5" width="4" height="4" rx="1"/><rect x="7.5" y="0.5" width="4" height="4" rx="1"/><rect x="0.5" y="7.5" width="4" height="4" rx="1"/><rect x="7.5" y="7.5" width="4" height="4" rx="1"/></svg>
+          Gallery
+        </div>
+        <div class="view-tab" onclick="setView('table', this)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0.5 3.5h11M0.5 7.5h11M4 0.5v11"/></svg>
+          Table
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <input class="search-input" type="text" placeholder="Search listings..." oninput="searchListings(this.value)">
+      <button class="btn btn-ghost" onclick="clearFilter()">All</button>
+      <div class="export-dropdown" id="export-dropdown">
+        <button class="btn btn-ghost" onclick="toggleExportMenu(event)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9"/></svg>
+          Export
+        </button>
+        <div class="export-menu" id="export-menu">
+          <div class="export-item" onclick="exportCSV()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="11" height="11" rx="2"/><path d="M1 5h11M1 9h11M5 1v11"/></svg>
+            Export as CSV
+          </div>
+          <div class="export-item" onclick="exportJSON()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 2H2a1 1 0 00-1 1v7a1 1 0 001 1h9a1 1 0 001-1V3a1 1 0 00-1-1H9M4 2V1h5v1M4 2h5"/></svg>
+            Backup as JSON
+          </div>
+          <div class="export-divider"></div>
+          <div class="export-item" onclick="triggerImport()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 9V2M3 6l3-4 3 4M1 11h11"/></svg>
+            Restore from JSON
+          </div>
+        </div>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
+      <button class="btn btn-primary" onclick="openAddModal()">+ Add listing</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- SUMMARY ROW -->
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-label">Total listings</div>
+        <div class="summary-value" id="stat-total">0</div>
+        <div class="summary-sub">saved properties</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Avg. rent</div>
+        <div class="summary-value" id="stat-avg">—</div>
+        <div class="summary-sub">per month</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Avg. commute</div>
+        <div class="summary-value" id="stat-commute">—</div>
+        <div class="summary-sub">to campus</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Within budget</div>
+        <div class="summary-value" id="stat-budget">0</div>
+        <div class="summary-sub">under £1,000/mo</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW CHARTS -->
+    <div class="overview-row" id="overview-section">
+      <div class="overview-card">
+        <div class="overview-title">Rent comparison</div>
+        <div class="budget-bar-wrap" id="budget-bars"></div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-title">By status</div>
+        <div class="status-legend" id="status-legend"></div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-row">
+      <span class="filter-label">Filter:</span>
+      <select class="filter-select" onchange="filterType(this.value)">
+        <option value="">All types</option>
+        <option value="Student Hall">Student Hall</option>
+        <option value="Private Room">Private Room</option>
+        <option value="Studio">Studio</option>
+        <option value="Full Apartment">Full Apartment</option>
+      </select>
+      <select class="filter-select" onchange="filterNeighbourhood(this.value)" id="hood-filter">
+        <option value="">All areas</option>
+      </select>
+      <select class="filter-select" onchange="filterCommute(this.value)">
+        <option value="">Any commute</option>
+        <option value="15">Under 15 min</option>
+        <option value="25">Under 25 min</option>
+        <option value="40">Under 40 min</option>
+      </select>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="gallery" id="gallery"></div>
+
+    <!-- TABLE -->
+    <div class="table-wrap" id="table-wrap">
+      <table class="prop-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Neighbourhood</th>
+            <th>Rent/mo</th>
+            <th>Type</th>
+            <th>Commute</th>
+            <th>Transport cost</th>
+            <th>Bills</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="empty-state" style="display:none">
+      <div class="empty-icon">🏠</div>
+      <div class="empty-title">No listings yet</div>
+      <div class="empty-sub">Click "+ Add listing" to start tracking accommodation options</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div id="modal-thumb-area"></div>
+    <div class="modal-body">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-name"></div>
+        <button class="close-btn" onclick="closeModalDirect()">✕</button>
+      </div>
+      <div class="modal-hood" id="modal-hood"></div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Status</div>
+        <div class="modal-status-row" id="modal-status-row"></div>
+      </div>
+      <div class="modal-grid" id="modal-grid"></div>
+      <div class="modal-notes">
+        <div class="modal-notes-label">Notes</div>
+        <textarea class="notes-textarea" id="modal-notes-input" placeholder="Add your notes about this property..." onchange="saveNotes()"></textarea>
+      </div>
+      <div id="modal-link-row"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="add-modal-overlay" id="add-modal-overlay" onclick="closeAddModal(event)">
+  <div class="add-modal">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Add new listing</div>
+      <button class="close-btn" onclick="closeAddModalDirect()">✕</button>
+    </div>
+    <div class="add-form">
+      <div class="form-group">
+        <label class="form-label">Property name *</label>
+        <input class="form-input" id="f-name" placeholder="e.g. University Halls or Flat in West Kensington">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Neighbourhood *</label>
+          <input class="form-input" id="f-hood" placeholder="e.g. West Kensington">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Postcode</label>
+          <input class="form-input" id="f-postcode" placeholder="e.g. W14 8PQ">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Monthly rent (£) *</label>
+          <input class="form-input" id="f-price" type="number" placeholder="850">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Commute (minutes) *</label>
+          <input class="form-input" id="f-commute" type="number" placeholder="25">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Accommodation type</label>
+          <select class="form-select" id="f-type">
+            <option value="Private Room">Private Room (shared flat)</option>
+            <option value="Student Hall">Student Hall</option>
+            <option value="Studio">Studio</option>
+            <option value="Full Apartment">Full Apartment</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Transport cost (£ one way)</label>
+          <input class="form-input" id="f-transport" type="number" step="0.1" placeholder="2.80">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Bills included?</label>
+          <select class="form-select" id="f-bills">
+            <option value="Yes">Yes — bills included</option>
+            <option value="No">No — bills extra</option>
+            <option value="Partial">Partial</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="f-status">
+            <option value="new">New / Unsorted</option>
+            <option value="interested">Interested</option>
+            <option value="shortlisted">Shortlisted</option>
+            <option value="applied">Applied</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Listing URL</label>
+        <input class="form-input" id="f-url" placeholder="https://www.spareroom.co.uk/...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image URL (optional)</label>
+        <input class="form-input" id="f-img" placeholder="https://... (paste direct image link)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="f-notes" placeholder="Key pros/cons, viewing date, landlord contact..." style="min-height: 70px; resize: vertical;"></textarea>
+      </div>
+      <button class="form-submit" onclick="addListing()">Add listing</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let listings = JSON.parse(localStorage.getItem('accommodation_listings') || '[]');
+let currentView = 'gallery';
+let activeFilter = { status: '', type: '', hood: '', commute: '', search: '' };
+let currentModalId = null;
+
+const STATUSES = {
+  new: { label: 'New', cls: 'status-new', color: '#A09D96' },
+  interested: { label: 'Interested', cls: 'status-interested', color: '#3B6B9E' },
+  shortlisted: { label: 'Shortlisted', cls: 'status-shortlisted', color: '#C17B3F' },
+  applied: { label: 'Applied', cls: 'status-applied', color: '#3D7A5C' },
+  rejected: { label: 'Rejected', cls: 'status-rejected', color: '#B85454' },
+};
+
+const NEIGHBORHOOD_EMOJIS = {
+  'south kensington': '🏛️', "earl's court": '🌆', 'west kensington': '🏘️',
+  'hammersmith': '🚇', 'fulham': '🌿', "shepherd's bush": '🛍️',
+  'north acton': '🏠', 'chelsea': '✨', 'kensington': '👑',
+  'notting hill': '🌸', 'bayswater': '🌳', 'paddington': '🚂',
+};
+
+function getEmoji(hood) {
+  const key = (hood || '').toLowerCase();
+  for (const [k, v] of Object.entries(NEIGHBORHOOD_EMOJIS)) {
+    if (key.includes(k)) return v;
+  }
+  return '🏠';
+}
+
+function commuteColor(min) {
+  if (min <= 15) return 'var(--green)';
+  if (min <= 30) return 'var(--accent)';
+  return 'var(--red)';
+}
+
+function commuteBarCls(min) {
+  if (min <= 15) return 'bar-green';
+  if (min <= 30) return 'bar-amber';
+  return 'bar-red';
+}
+
+function save() {
+  localStorage.setItem('accommodation_listings', JSON.stringify(listings));
+}
+
+function render() {
+  updateStats();
+  updateOverview();
+  updateHoodFilter();
+
+  let filtered = listings.filter(l => {
+    if (activeFilter.status && l.status !== activeFilter.status) return false;
+    if (activeFilter.type && l.type !== activeFilter.type) return false;
+    if (activeFilter.hood && l.hood !== activeFilter.hood) return false;
+    if (activeFilter.commute && l.commute > parseInt(activeFilter.commute)) return false;
+    if (activeFilter.search) {
+      const q = activeFilter.search.toLowerCase();
+      if (!l.name.toLowerCase().includes(q) && !l.hood.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  renderGallery(filtered);
+  renderTable(filtered);
+
+  const empty = document.getElementById('empty-state');
+  if (filtered.length === 0) {
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+  }
+}
+
+function renderGallery(list) {
+  const g = document.getElementById('gallery');
+  g.innerHTML = list.map(l => `
+    <div class="property-card" onclick="openModal(${l.id})">
+      <div class="card-thumb">
+        ${l.img
+          ? `<img src="${l.img}" alt="${l.name}" onerror="this.parentNode.innerHTML='<div class=\\'card-thumb-placeholder\\'><div class=\\'thumb-icon\\'>${getEmoji(l.hood)}</div><div class=\\'thumb-label\\'>No image</div></div>'">`
+          : `<div class="card-thumb-placeholder"><div class="thumb-icon">${getEmoji(l.hood)}</div><div class="thumb-label">No image added</div></div>`
+        }
+        <div class="card-status ${STATUSES[l.status]?.cls || 'status-new'}">${STATUSES[l.status]?.label || 'New'}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${l.name}</div>
+        <div class="card-hood">${getEmoji(l.hood)} ${l.hood}${l.postcode ? ' · ' + l.postcode : ''}</div>
+        <div class="card-price-row">
+          <div class="card-price">£${Number(l.price).toLocaleString()}</div>
+          <div class="card-price-mo">/ month${l.bills === 'Yes' ? ' · bills inc.' : ''}</div>
+        </div>
+        <div class="card-meta">
+          <div class="meta-pill commute">🚇 ${l.commute} min commute</div>
+          <div class="meta-pill type">${l.type}</div>
+          ${l.transport ? `<div class="meta-pill transport-cost">🚌 £${l.transport} one-way</div>` : ''}
+          ${l.bills === 'Yes' ? `<div class="meta-pill bills">✓ Bills inc.</div>` : ''}
+        </div>
+        <div class="card-footer">
+          <div style="font-size: 11px; color: ${l.price <= 1000 ? 'var(--green)' : 'var(--red)'}; font-weight: 500;">
+            ${l.price <= 1000 ? '✓ Within budget' : '↑ Over budget'}
+          </div>
+          <div class="card-actions">
+            <button class="icon-btn ${l.status === 'shortlisted' ? 'active' : ''}" onclick="event.stopPropagation(); quickShortlist(${l.id})" title="Shortlist">★</button>
+            <button class="icon-btn" onclick="event.stopPropagation(); deleteListing(${l.id})" title="Remove">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTable(list) {
+  const tb = document.getElementById('table-body');
+  tb.innerHTML = list.map(l => {
+    const pct = Math.min(100, Math.round((l.commute / 45) * 100));
+    return `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="table-thumb">
+            ${l.img ? `<img src="${l.img}" alt="" onerror="this.style.display='none'">` : `<div style="width:48px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;">${getEmoji(l.hood)}</div>`}
+          </div>
+          <div>
+            <div class="table-name">${l.name}</div>
+            ${l.postcode ? `<div class="table-sub">${l.postcode}</div>` : ''}
+          </div>
+        </div>
+      </td>
+      <td>${l.hood}</td>
+      <td>
+        <div class="table-price">£${Number(l.price).toLocaleString()}</div>
+        <div style="font-size:10px;color:${l.price<=1000?'var(--green)':'var(--red)'};">${l.price<=1000?'✓ on budget':'over budget'}</div>
+      </td>
+      <td><span class="pill-sm" style="background:var(--purple-bg);color:var(--purple);">${l.type}</span></td>
+      <td>
+        <div class="commute-bar">
+          <div class="bar-track"><div class="bar-fill ${commuteBarCls(l.commute)}" style="width:${pct}%"></div></div>
+          <span class="bar-label">${l.commute} min</span>
+        </div>
+      </td>
+      <td>${l.transport ? `£${l.transport}` : '—'}</td>
+      <td><span class="pill-sm" style="background:${l.bills==='Yes'?'var(--green-bg)':'var(--surface2)'};color:${l.bills==='Yes'?'var(--green-text)':'var(--text2)'};">${l.bills}</span></td>
+      <td><span class="pill-sm ${STATUSES[l.status]?.cls || 'status-new'}">${STATUSES[l.status]?.label || 'New'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStats() {
+  const t = listings.length;
+  document.getElementById('stat-total').textContent = t;
+  if (t === 0) {
+    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-commute').textContent = '—';
+    document.getElementById('stat-budget').textContent = '0';
+    return;
+  }
+  const avgP = Math.round(listings.reduce((s,l) => s + Number(l.price), 0) / t);
+  const avgC = Math.round(listings.reduce((s,l) => s + Number(l.commute), 0) / t);
+  const inBudget = listings.filter(l => l.price <= 1000).length;
+  document.getElementById('stat-avg').textContent = '£' + avgP.toLocaleString();
+  document.getElementById('stat-commute').textContent = avgC + ' min';
+  document.getElementById('stat-budget').textContent = inBudget;
+}
+
+function updateOverview() {
+  const bars = document.getElementById('budget-bars');
+  const legend = document.getElementById('status-legend');
+  const maxP = listings.length ? Math.max(...listings.map(l => l.price)) : 1000;
+
+  bars.innerHTML = listings.length === 0
+    ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:16px 0;">No listings yet</div>'
+    : listings.slice().sort((a,b) => b.price - a.price).slice(0,6).map(l => `
+      <div class="budget-item">
+        <div class="budget-name" title="${l.name}">${l.name}</div>
+        <div class="budget-track"><div class="budget-fill" style="width:${Math.round((l.price/maxP)*100)}%;background:${l.price>1000?'var(--red)':'var(--text)'}"></div></div>
+        <div class="budget-val">£${Number(l.price).toLocaleString()}</div>
+      </div>`).join('');
+
+  const counts = {};
+  listings.forEach(l => { counts[l.status] = (counts[l.status] || 0) + 1; });
+  legend.innerHTML = Object.entries(STATUSES).map(([k, v]) => `
+    <div class="legend-item">
+      <div class="legend-dot-label">
+        <div class="legend-dot" style="background:${v.color}"></div>
+        <span>${v.label}</span>
+      </div>
+      <span class="legend-count">${counts[k] || 0}</span>
+    </div>`).join('');
+}
+
+function updateHoodFilter() {
+  const hoods = [...new Set(listings.map(l => l.hood))].sort();
+  const sel = document.getElementById('hood-filter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All areas</option>' + hoods.map(h => `<option value="${h}" ${h===cur?'selected':''}>${h}</option>`).join('');
+}
+
+function openModal(id) {
+  const l = listings.find(x => x.id === id);
+  if (!l) return;
+  currentModalId = id;
+
+  document.getElementById('modal-thumb-area').innerHTML = l.img
+    ? `<div class="modal-thumb"><img src="${l.img}" alt="${l.name}" onerror="this.parentNode.innerHTML='<div class=\\'modal-thumb-placeholder\\'>${getEmoji(l.hood)}</div>'"></div>`
+    : `<div class="modal-thumb-placeholder">${getEmoji(l.hood)}</div>`;
+
+  document.getElementById('modal-name').textContent = l.name;
+  document.getElementById('modal-hood').textContent = `${getEmoji(l.hood)} ${l.hood}${l.postcode ? ' · ' + l.postcode : ''}`;
+
+  const statusRow = document.getElementById('modal-status-row');
+  statusRow.innerHTML = Object.entries(STATUSES).map(([k, v]) =>
+    `<button class="status-btn ${l.status === k ? 'sel-' + k : ''}" onclick="setStatus(${id}, '${k}')">${v.label}</button>`
+  ).join('');
+
+  document.getElementById('modal-grid').innerHTML = `
+    <div class="modal-stat"><div class="modal-stat-label">Monthly rent</div><div class="modal-stat-val" style="font-size:20px;font-family:'Instrument Serif',serif;">£${Number(l.price).toLocaleString()}<span style="font-size:13px;color:var(--text3);font-family:'DM Sans',sans-serif;">/mo</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Commute to campus</div><div class="modal-stat-val" style="color:${commuteColor(l.commute)}">${l.commute} minutes</div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Accommodation type</div><div class="modal-stat-val">${l.type}</div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Transport cost (one way)</div><div class="modal-stat-val">${l.transport ? '£' + l.transport : 'Walk / cycle'}</div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Bills included</div><div class="modal-stat-val" style="color:${l.bills==='Yes'?'var(--green)':'var(--text2)'}">${l.bills}</div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Budget status</div><div class="modal-stat-val" style="color:${l.price<=1000?'var(--green)':'var(--red)'}">${l.price<=1000?'✓ Within £1,000/mo':'↑ Over budget'}</div></div>
+  `;
+
+  document.getElementById('modal-notes-input').value = l.notes || '';
+
+  document.getElementById('modal-link-row').innerHTML = l.url
+    ? `<a class="modal-link" href="${l.url}" target="_blank">🔗 View original listing</a>`
+    : '';
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'modal-overlay') closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  currentModalId = null;
+}
+
+function setStatus(id, status) {
+  const l = listings.find(x => x.id === id);
+  if (l) { l.status = status; save(); render(); openModal(id); }
+}
+
+function saveNotes() {
+  if (!currentModalId) return;
+  const l = listings.find(x => x.id === currentModalId);
+  if (l) { l.notes = document.getElementById('modal-notes-input').value; save(); }
+}
+
+function quickShortlist(id) {
+  const l = listings.find(x => x.id === id);
+  if (!l) return;
+  l.status = l.status === 'shortlisted' ? 'new' : 'shortlisted';
+  save(); render();
+}
+
+function deleteListing(id) {
+  if (confirm('Remove this listing?')) {
+    listings = listings.filter(x => x.id !== id);
+    save(); render();
+  }
+}
+
+function openAddModal() {
+  ['f-name','f-hood','f-postcode','f-price','f-commute','f-transport','f-url','f-img','f-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-bills').value = 'No';
+  document.getElementById('f-status').value = 'new';
+  document.getElementById('f-type').value = 'Private Room';
+  document.getElementById('add-modal-overlay').classList.add('open');
+}
+function closeAddModal(e) {
+  if (e.target.id === 'add-modal-overlay') closeAddModalDirect();
+}
+function closeAddModalDirect() {
+  document.getElementById('add-modal-overlay').classList.remove('open');
+}
+
+function addListing() {
+  const name = document.getElementById('f-name').value.trim();
+  const hood = document.getElementById('f-hood').value.trim();
+  const price = parseFloat(document.getElementById('f-price').value);
+  const commute = parseInt(document.getElementById('f-commute').value);
+  if (!name || !hood || isNaN(price) || isNaN(commute)) {
+    alert('Please fill in at least: Name, Neighbourhood, Rent, and Commute time.');
+    return;
+  }
+  const id = Date.now();
+  listings.push({
+    id, name, hood,
+    postcode: document.getElementById('f-postcode').value.trim(),
+    price,
+    commute,
+    type: document.getElementById('f-type').value,
+    transport: parseFloat(document.getElementById('f-transport').value) || null,
+    bills: document.getElementById('f-bills').value,
+    status: document.getElementById('f-status').value,
+    url: document.getElementById('f-url').value.trim(),
+    img: document.getElementById('f-img').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+  });
+  save();
+  render();
+  closeAddModalDirect();
+}
+
+function setView(view, el) {
+  currentView = view;
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const g = document.getElementById('gallery');
+  const tw = document.getElementById('table-wrap');
+  if (view === 'gallery') { g.classList.remove('hidden'); tw.classList.remove('visible'); }
+  else { g.classList.add('hidden'); tw.classList.add('visible'); }
+}
+
+function filterStatus(s) {
+  activeFilter.status = s;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  render();
+}
+function filterType(v) { activeFilter.type = v; render(); }
+function filterNeighbourhood(v) { activeFilter.hood = v; render(); }
+function filterCommute(v) { activeFilter.commute = v; render(); }
+function searchListings(v) { activeFilter.search = v; render(); }
+function clearFilter() {
+  activeFilter = { status: '', type: '', hood: '', commute: '', search: '' };
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector('.nav-item').classList.add('active');
+  render();
+}
+
+// EXPORT / IMPORT
+function toggleExportMenu(e) {
+  e.stopPropagation();
+  document.getElementById('export-menu').classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  document.getElementById('export-menu').classList.remove('open');
+});
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+function exportCSV() {
+  document.getElementById('export-menu').classList.remove('open');
+  if (!listings.length) { showToast('No listings to export'); return; }
+  const headers = ['Name','Neighbourhood','Postcode','Rent (£/mo)','Commute (min)','Type','Transport cost (£)','Bills included','Status','URL','Notes'];
+  const rows = listings.map(l => [
+    `"${(l.name||'').replace(/"/g,'""')}"`,
+    `"${(l.hood||'').replace(/"/g,'""')}"`,
+    `"${(l.postcode||'').replace(/"/g,'""')}"`,
+    l.price,
+    l.commute,
+    `"${(l.type||'').replace(/"/g,'""')}"`,
+    l.transport || '',
+    `"${(l.bills||'').replace(/"/g,'""')}"`,
+    `"${(l.status||'').replace(/"/g,'""')}"`,
+    `"${(l.url||'').replace(/"/g,'""')}"`,
+    `"${(l.notes||'').replace(/"/g,'""').replace(/\n/g,' ')}"`
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `accommodation_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('✓ CSV exported — open in Excel or Google Sheets');
+}
+
+function exportJSON() {
+  document.getElementById('export-menu').classList.remove('open');
+  if (!listings.length) { showToast('No listings to backup'); return; }
+  const blob = new Blob([JSON.stringify(listings, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `accommodation_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('✓ Backup saved — keep this file safe!');
+}
+
+function triggerImport() {
+  document.getElementById('export-menu').classList.remove('open');
+  document.getElementById('import-file').click();
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error('Invalid format');
+      if (listings.length > 0 && !confirm(`This will replace your ${listings.length} current listing(s) with ${data.length} from the backup. Continue?`)) return;
+      listings = data;
+      save();
+      render();
+      showToast(`✓ Restored ${data.length} listings from backup`);
+    } catch {
+      showToast('✗ Invalid backup file — please use a JSON backup');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// Seed with examples
+if (listings.length === 0) {
+  const seeds = [
+    { id: 1, name: 'University Halls – Example Block', hood: 'Sample District', postcode: 'AB1 2CD', price: 720, commute: 38, type: 'Student Hall', transport: 0, bills: 'Yes', status: 'shortlisted', url: '', img: '', notes: 'Cheapest option with bills included. Example note.' },
+    { id: 2, name: 'Private Room – Example Neighbourhood', hood: 'Sample Neighbourhood A', postcode: 'EF3 4GH', price: 850, commute: 22, type: 'Private Room', transport: 1.65, bills: 'No', status: 'interested', url: '', img: '', notes: 'Best commute-to-cost ratio in this example dataset.' },
+    { id: 3, name: 'Private Room – Another Example Area', hood: 'Sample Neighbourhood B', postcode: 'IJ5 6KL', price: 800, commute: 30, type: 'Private Room', transport: 1.65, bills: 'No', status: 'new', url: '', img: '', notes: 'Sample listing — cycleable to campus in this example.' },
+  ];
+  listings = seeds;
+  save();
+}
+
+render();
+</script>
+</body>
+</html>
