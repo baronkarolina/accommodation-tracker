@@ -1,6 +1,6 @@
 # Accommodation Tracker
 
-A lightweight, single-file kanban-style dashboard for tracking rental/housing applications — built to make flat-hunting less chaotic.
+Dashboard for tracking rental/housing applications — built to make flat-hunting less chaotic.
 
 ## What it does
 
